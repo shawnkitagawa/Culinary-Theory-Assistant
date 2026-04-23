@@ -118,6 +118,16 @@ The technical emphasis of this project is on the backend logic, retrieval system
 
 ---
 
+## Database Schema
+
+The system uses a relational structure that separates document-level metadata from chunk-level retrieval data.
+
+- `documents` stores source metadata such as title, author, file path, status, and timestamps
+- `chunks` stores chunked document content, page references, chunk order, and embeddings for vector retrieval
+- one document can have many chunks
+
+![Database Schema](./architecture/drawSQL-image-export-2026-04-23.jpg)
+
 ## Project Structure
 
 ```text
