@@ -1267,194 +1267,238 @@
     </section>
   </main>
 
-  <script>
-    const homeSection = document.getElementById("homeSection");
-    const skillsSection = document.getElementById("skillsSection");
-    const appSection = document.getElementById("appSection");
+ <script>
+  const homeSection = document.getElementById("homeSection");
+  const skillsSection = document.getElementById("skillsSection");
+  const appSection = document.getElementById("appSection");
 
-    const homeButton = document.getElementById("homeButton");
-    const skillsButton = document.getElementById("skillsButton");
-    const demoButton = document.getElementById("demoButton");
-    const launchButton = document.getElementById("launchButton");
-    const viewSkillsButton = document.getElementById("viewSkillsButton");
-    const skillsToDemoButton = document.getElementById("skillsToDemoButton");
+  const homeButton = document.getElementById("homeButton");
+  const skillsButton = document.getElementById("skillsButton");
+  const demoButton = document.getElementById("demoButton");
+  const launchButton = document.getElementById("launchButton");
+  const viewSkillsButton = document.getElementById("viewSkillsButton");
+  const skillsToDemoButton = document.getElementById("skillsToDemoButton");
 
-    const form = document.getElementById("askForm");
-    const questionInput = document.getElementById("question");
-    const topKInput = document.getElementById("top_k");
-    const strictnessInput = document.getElementById("strictness");
-    const languageInput = document.getElementById("response_language");
-    const resultBox = document.getElementById("result");
-    const errorBox = document.getElementById("errorBox");
-    const loading = document.getElementById("loading");
-    const loadingTitle = document.getElementById("loadingTitle");
-    const loadingStep = document.getElementById("loadingStep");
-    const loadingTime = document.getElementById("loadingTime");
-    const submitButton = document.getElementById("submitButton");
+  const form = document.getElementById("askForm");
+  const questionInput = document.getElementById("question");
+  const topKInput = document.getElementById("top_k");
+  const strictnessInput = document.getElementById("strictness");
+  const languageInput = document.getElementById("response_language");
+  const resultBox = document.getElementById("result");
+  const errorBox = document.getElementById("errorBox");
+  const loading = document.getElementById("loading");
+  const loadingTitle = document.getElementById("loadingTitle");
+  const loadingStep = document.getElementById("loadingStep");
+  const loadingTime = document.getElementById("loadingTime");
+  const submitButton = document.getElementById("submitButton");
 
-    let loadingTimer = null;
-    let loadingSeconds = 0;
+  let loadingTimer = null;
+  let loadingSeconds = 0;
 
-    function setActivePage(pageName) {
-      homeSection.style.display = pageName === "home" ? "block" : "none";
-      skillsSection.style.display = pageName === "skills" ? "block" : "none";
-      appSection.style.display = pageName === "demo" ? "block" : "none";
+  function setActivePage(pageName) {
+    homeSection.style.display = pageName === "home" ? "block" : "none";
+    skillsSection.style.display = pageName === "skills" ? "block" : "none";
+    appSection.style.display = pageName === "demo" ? "block" : "none";
 
-      homeButton.classList.toggle("active", pageName === "home");
-      skillsButton.classList.toggle("active", pageName === "skills");
-      demoButton.classList.toggle("active", pageName === "demo");
+    homeButton.classList.toggle("active", pageName === "home");
+    skillsButton.classList.toggle("active", pageName === "skills");
+    demoButton.classList.toggle("active", pageName === "demo");
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-    homeButton.addEventListener("click", () => setActivePage("home"));
-    skillsButton.addEventListener("click", () => setActivePage("skills"));
-    demoButton.addEventListener("click", () => setActivePage("demo"));
-    launchButton.addEventListener("click", () => setActivePage("demo"));
-    viewSkillsButton.addEventListener("click", () => setActivePage("skills"));
-    skillsToDemoButton.addEventListener("click", () => setActivePage("demo"));
+  homeButton.addEventListener("click", () => setActivePage("home"));
+  skillsButton.addEventListener("click", () => setActivePage("skills"));
+  demoButton.addEventListener("click", () => setActivePage("demo"));
+  launchButton.addEventListener("click", () => setActivePage("demo"));
+  viewSkillsButton.addEventListener("click", () => setActivePage("skills"));
+  skillsToDemoButton.addEventListener("click", () => setActivePage("demo"));
 
-    document.querySelectorAll(".example").forEach((button) => {
-      button.addEventListener("click", () => {
-        questionInput.value = button.dataset.question;
-        questionInput.focus();
-      });
+  document.querySelectorAll(".example").forEach((button) => {
+    button.addEventListener("click", () => {
+      questionInput.value = button.dataset.question;
+      questionInput.focus();
     });
+  });
 
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+  function escapeHtml(text) {
+    return String(text ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
-    function getEstimatedTime(mode) {
-      if (mode === "strict") return "Estimated time: 5–10 seconds";
-      if (mode === "balanced") return "Estimated time: 8–15 seconds";
-      if (mode === "creative") return "Estimated time: 10–20 seconds";
-      if (mode === "recipe") return "Estimated time: 12–25 seconds";
-      return "Estimated time: 8–15 seconds";
-    }
+  function normalizeMarkdown(text) {
+    return String(text ?? "")
+      .replace(/\s+(#{1,6}\s)/g, "\n\n$1")
+      .replace(/\s+(\d+\.\s+\*\*)/g, "\n\n$1")
+      .replace(/\s+(-\s+\*\*)/g, "\n$1")
+      .replace(/\s+(>\s)/g, "\n\n$1");
+  }
 
-    function getLoadingMessage(mode, seconds) {
-      if (seconds < 3) return "Searching culinary sources...";
-      if (seconds < 7) return "Ranking relevant passages...";
-      if (seconds < 12 && mode === "recipe") return "Building a theory-based recipe...";
-      if (seconds < 12) return "Generating a grounded answer...";
-      return "Still working — cold starts can take longer.";
-    }
+  function renderMarkdown(markdownText) {
+    const cleanMarkdown = normalizeMarkdown(markdownText);
+    const rawHtml = marked.parse(cleanMarkdown);
+    return DOMPurify.sanitize(rawHtml);
+  }
 
-    function startLoading(mode) {
-      loadingSeconds = 0;
-      loadingTitle.textContent = "Preparing answer...";
+  function getEstimatedTime(mode) {
+    if (mode === "strict") return "Estimated time: 5–10 seconds";
+    if (mode === "balanced") return "Estimated time: 8–15 seconds";
+    if (mode === "creative") return "Estimated time: 10–20 seconds";
+    if (mode === "recipe") return "Estimated time: 12–25 seconds";
+    return "Estimated time: 8–15 seconds";
+  }
+
+  function getLoadingMessage(mode, seconds) {
+    if (seconds < 3) return "Searching culinary sources...";
+    if (seconds < 7) return "Ranking relevant passages...";
+    if (seconds < 12 && mode === "recipe") return "Building a theory-based recipe...";
+    if (seconds < 12) return "Generating a grounded answer...";
+    return "Still working — cold starts can take longer.";
+  }
+
+  function startLoading(mode) {
+    loadingSeconds = 0;
+    loadingTitle.textContent = "Preparing answer...";
+    loadingStep.textContent = getLoadingMessage(mode, loadingSeconds);
+    loadingTime.textContent = getEstimatedTime(mode);
+    loading.style.display = "flex";
+
+    loadingTimer = setInterval(() => {
+      loadingSeconds += 1;
       loadingStep.textContent = getLoadingMessage(mode, loadingSeconds);
-      loadingTime.textContent = getEstimatedTime(mode);
-      loading.style.display = "flex";
 
-      loadingTimer = setInterval(() => {
-        loadingSeconds += 1;
-        loadingStep.textContent = getLoadingMessage(mode, loadingSeconds);
-        if (loadingSeconds > 15) {
-          loadingTime.textContent = `Elapsed time: ${loadingSeconds}s`;
-        }
-      }, 1000);
+      if (loadingSeconds > 15) {
+        loadingTime.textContent = `Elapsed time: ${loadingSeconds}s`;
+      }
+    }, 1000);
+  }
+
+  function stopLoading() {
+    loading.style.display = "none";
+
+    if (loadingTimer) {
+      clearInterval(loadingTimer);
     }
 
-    function stopLoading() {
-      loading.style.display = "none";
-      if (loadingTimer) clearInterval(loadingTimer);
-      loadingTimer = null;
+    loadingTimer = null;
+  }
+
+  function safeNumber(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function renderSources(sources) {
+    if (!Array.isArray(sources) || sources.length === 0) {
+      return "";
     }
 
-    function renderSources(sources) {
-      if (!sources || sources.length === 0) return "";
+    return `
+      <div class="sources">
+        <h3>Retrieved Sources</h3>
+        ${sources.map((source, index) => {
+          const similarity = safeNumber(source.similarity, 0);
+          const distance = safeNumber(source.distance, 0);
 
-      return `
-        <div class="sources">
-          <h3>Retrieved Sources</h3>
-          ${sources.map((source, index) => `
+          return `
             <div class="source-item">
               <div class="source-top">
-                <div class="source-title">${index + 1}. ${escapeHtml(source.document_title || "Unknown document")}</div>
-                <div class="score">${((source.similarity || 0) * 100).toFixed(1)}%</div>
+                <div class="source-title">
+                  ${index + 1}. ${escapeHtml(source.document_title || "Unknown document")}
+                </div>
+                <div class="score">
+                  ${(similarity * 100).toFixed(1)}%
+                </div>
               </div>
+
               <div class="source-meta">
-                Pages: ${source.page_start}–${source.page_end}<br />
-                Distance: ${Number(source.distance).toFixed(4)}<br />
-                Chunk ID: ${escapeHtml(source.chunk_id)}
+                Pages: ${escapeHtml(source.page_start ?? "N/A")}–${escapeHtml(source.page_end ?? "N/A")}<br />
+                Distance: ${distance.toFixed(4)}<br />
+                Chunk ID: ${escapeHtml(source.chunk_id || "N/A")}
               </div>
             </div>
-          `).join("")}
-        </div>
-      `;
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const payload = {
+      question: questionInput.value.trim(),
+      top_k: Number(topKInput.value),
+      strictness: strictnessInput.value,
+      response_language: languageInput.value
+    };
+
+    errorBox.innerHTML = "";
+
+    if (!payload.question) {
+      errorBox.innerHTML = `<div class="error">Question cannot be empty.</div>`;
+      return;
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    startLoading(payload.strictness);
+    submitButton.disabled = true;
 
-      const payload = {
-        question: questionInput.value.trim(),
-        top_k: Number(topKInput.value),
-        strictness: strictnessInput.value,
-        response_language: languageInput.value
-      };
+    resultBox.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <strong>Searching...</strong>
+          Retrieving source chunks and preparing a grounded answer.
+        </div>
+      </div>
+    `;
 
-      errorBox.innerHTML = "";
+    try {
+      const response = await fetch("/answer/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-      if (!payload.question) {
-        errorBox.innerHTML = `<div class="error">Question cannot be empty.</div>`;
-        return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Something went wrong.");
       }
 
-      startLoading(payload.strictness);
-      submitButton.disabled = true;
+      resultBox.innerHTML = `
+        <div class="answer-title">
+          <h2>Answer</h2>
+          <span class="mode-pill">${escapeHtml(payload.strictness)} mode</span>
+        </div>
+
+        <div class="answer-text">
+          ${renderMarkdown(data.answer)}
+        </div>
+
+        ${renderSources(data.sources)}
+      `;
+    } catch (error) {
       resultBox.innerHTML = `
         <div class="empty-state">
           <div>
-            <strong>Searching...</strong>
-            Retrieving source chunks and preparing a grounded answer.
+            <strong>Service interrupted.</strong>
+            Something went wrong while generating the answer.
           </div>
         </div>
       `;
 
-      try {
-        const response = await fetch("/answer/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.detail || "Something went wrong.");
-        }
-
-        resultBox.innerHTML = `
-          <div class="answer-title">
-            <h2>Answer</h2>
-            <span class="mode-pill">${escapeHtml(payload.strictness)} mode</span>
-          </div>
-          <div class="answer-text">${escapeHtml(data.answer)}</div>
-          ${renderSources(data.sources)}
-        `;
-      } catch (error) {
-        resultBox.innerHTML = `
-          <div class="empty-state">
-            <div>
-              <strong>Service interrupted.</strong>
-              Something went wrong while generating the answer.
-            </div>
-          </div>
-        `;
-        errorBox.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
-      } finally {
-        stopLoading();
-        submitButton.disabled = false;
-      }
-    });
-  </script>
+      errorBox.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+    } finally {
+      stopLoading();
+      submitButton.disabled = false;
+    }
+  });
+</script>
 </body>
 </html>
