@@ -14,6 +14,11 @@ Any frontend included in the project is intentionally lightweight and serves as 
 
 ---
 
+## Live Demo
+[Try the deployed demo](https://culinary-rag-api-724121259172.asia-northeast1.run.app/)
+> Note: This demo is deployed on Google Cloud Run. The first request may take a few seconds if the service is waking up from a cold start.
+
+
 ## Project Goal
 
 The goal of this project is to build a backend-driven AI assistant that can:
