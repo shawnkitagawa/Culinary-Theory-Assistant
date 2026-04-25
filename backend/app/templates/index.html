@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Culinary RAG Assistant | AI Application Demo</title>
@@ -839,11 +841,65 @@
     }
 
     .answer-text {
-      white-space: pre-wrap;
-      color: #33251d;
-      font-size: 16px;
-      line-height: 1.85;
-    }
+  color: #33251d;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.answer-text h1,
+.answer-text h2,
+.answer-text h3 {
+  margin: 1.4rem 0 0.6rem;
+  color: #241c17;
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.2;
+}
+
+.answer-text h1 {
+  font-size: 30px;
+}
+
+.answer-text h2 {
+  font-size: 26px;
+}
+
+.answer-text h3 {
+  font-size: 22px;
+}
+
+.answer-text p {
+  margin: 0 0 1rem;
+}
+
+.answer-text ul,
+.answer-text ol {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.answer-text li {
+  margin-bottom: 0.45rem;
+}
+
+.answer-text strong {
+  color: #241c17;
+  font-weight: 900;
+}
+
+.answer-text blockquote {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: rgba(201,138,56,.10);
+  border-radius: 12px;
+}
+
+.answer-text code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(36,28,23,.08);
+  font-size: 0.92em;
+}
 
     .sources {
       margin-top: 28px;
