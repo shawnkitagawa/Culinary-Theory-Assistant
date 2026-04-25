@@ -1,0 +1,38 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+.gitignore
+
+# Jupyter notebooks / checkpoints
+notebook/
+.ipynb_checkpoints/
+*.ipynb
+
+# Local/editor files
+.vscode/
+.idea/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tests/local artifacts
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
