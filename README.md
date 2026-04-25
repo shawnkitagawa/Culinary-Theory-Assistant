@@ -28,7 +28,8 @@ I wanted to build an AI assistant that does more than generate generic cooking a
 
 ## Live Demo
 [Try the deployed demo](https://culinary-rag-api-724121259172.asia-northeast1.run.app/)
-> Note: This demo is deployed on Google Cloud Run. The first request may take a few seconds if the service is waking up from a cold start.
+>  Note: This demo is deployed on Google Cloud Run. The first request may take a few seconds if the service is waking up from a cold start. To protect the API, the demo is rate-limited to 5 requests per 10 minutes.
+> Try it out and explore theory-based culinary answers, technique explanations, and recipe ideas generated from the knowledge base.
 
 
 ## Project Goal
