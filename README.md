@@ -1,13 +1,3 @@
-## Why I Built This
-
-What separates a good cook from a Michelin-level chef?
-
-From my experience, it is not only creativity or following recipes. A major difference is the depth of theory behind each decision: heat control, timing, texture, moisture, seasoning, flavor balance, and understanding the science behind how ingredients behave.
-
-That idea inspired this project.
-
-I wanted to build an AI assistant that does more than generate generic cooking advice. The goal was to create a system that can retrieve relevant culinary knowledge first, then use that context to answer technique-based questions in a more grounded and useful way.
-
 
 # Culinary Technique RAG Assistant
 
@@ -24,6 +14,17 @@ Its core value is in the API design, document processing workflow, vector search
 Any frontend included in the project is intentionally lightweight and serves as a simple interface for demonstrating the backend system in action.
 
 ---
+
+## Why I Built This
+
+What separates a good cook from a Michelin-level chef?
+
+From my experience, it is not only creativity or following recipes. A major difference is the depth of theory behind each decision: heat control, timing, texture, moisture, seasoning, flavor balance, and understanding the science behind how ingredients behave.
+
+That idea inspired this project.
+
+I wanted to build an AI assistant that does more than generate generic cooking advice. The goal was to create a system that can retrieve relevant culinary knowledge first, then use that context to answer technique-based questions in a more grounded and useful way.
+
 
 ## Live Demo
 [Try the deployed demo](https://culinary-rag-api-724121259172.asia-northeast1.run.app/)
