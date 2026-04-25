@@ -107,12 +107,12 @@ def createDocument(text: str, file_name: str, file_path: str):
 
 @router.post("/")
 def ingest_document(db: Session = Depends(get_db)): 
-      # 1. create document row
+
 
     try: 
 
         for filename in os.listdir(FOLDER_PATH):
-            print(f"___________________________ {filename}_____________________")
+
             if not filename.endswith(".txt"):
                 continue
 
@@ -136,13 +136,6 @@ def ingest_document(db: Session = Depends(get_db)):
             db.add(new_document)
             db.flush()
 
-
-
-                # fetch the document id 
-
-
-                # # add the chunks 
-
             chunks = chunk_text_with_pages(text)
 
             print("TEXT LENGTH:", len(text))
@@ -152,7 +145,7 @@ def ingest_document(db: Session = Depends(get_db)):
                 print("WARNING: No chunks created for", filename)
 
             for chunk in chunks: 
-                print(f"___________________________ {chunk["chunk_index"]}_____________________")
+             
                 new_chunk = Chunk(
                     document_id = new_document.document_id, 
                     page_start = chunk["page_start"],
@@ -162,11 +155,11 @@ def ingest_document(db: Session = Depends(get_db)):
                     chunk_index = chunk["chunk_index"], 
                 )
                 db.add(new_chunk)
-            print(f"___________________________ finish {filename}_____________________")
+       
 
 
             db.commit()
-            print("___________________fiish")
+        
     except IntegrityError as e: 
         db.rollback()
         print("IntegrityError:", e)

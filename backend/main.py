@@ -28,7 +28,6 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
         },
     )
 
-# app.include_router(document_router)
 app.include_router(answer_router)
 app.include_router(ui_router)
 
