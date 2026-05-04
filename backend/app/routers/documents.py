@@ -107,12 +107,11 @@ def createDocument(text: str, file_name: str, file_path: str):
 
 @router.post("/")
 def ingest_document(db: Session = Depends(get_db)): 
-
+      # 1. create document row
 
     try: 
 
         for filename in os.listdir(FOLDER_PATH):
-
             if not filename.endswith(".txt"):
                 continue
 
