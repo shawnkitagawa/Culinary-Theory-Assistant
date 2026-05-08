@@ -2,6 +2,7 @@ from main import app
 import pytest
 from uuid import UUID
 from datetime import datetime
+from unittest.mock import patch 
 
 
 @pytest.mark.parametrize(
@@ -175,8 +176,7 @@ def test_answer_failure_bad_request(client, payload):
     assert response.status_code == 400
     data = response.json()
 
-    assert data["Error"] == "The request body is missing question"
-
+    assert data["Error"] == "The request body is either missing required fields or contains invalid data types"
 
 def test_answer_failure_not_found(client):
     payload = {
@@ -191,6 +191,30 @@ def test_answer_failure_not_found(client):
     data = response.json()
 
     assert data["Error"] ==  "No chat with this chat_id exists"
+
+
+def test_answer_internal_server_failure(client): 
+    payload = {
+        "question": "Why do chefs sear meat before braising"
+    }
+
+    with patch(
+        "app.routes.answer.generate_rag_answer", 
+        side_effect = Exception("Something failed")
+    ):
+        response = client.post("/answer", json = payload) 
+
+        assert response.status_code == 500
+
+        data = response.json()
+
+        assert data["Error"] == "The answer could not be generated"
+
+
+
+
+
+
 
 
 

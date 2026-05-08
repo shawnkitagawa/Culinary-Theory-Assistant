@@ -1,10 +1,7 @@
 from fastapi import HTTPException
 from openai import OpenAIError
 
-from app.core.config import client
-
-
-EMBEDDING_MODEL = "text-embedding-3-small"
+from app.core.config import client, EMBEDDING_MODEL
 
 
 def text_to_vector(text: str) -> list[float]:
@@ -29,3 +26,12 @@ def text_to_vector(text: str) -> list[float]:
             status_code=502,
             detail="AI embedding service error",
         )
+    
+def fallback_title(question: str) -> str: 
+    title = question.strip()
+
+    if not title: 
+        return "Untitled Conversation"
+    
+    return title[:60].rstrip()
+    

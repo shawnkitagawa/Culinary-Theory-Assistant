@@ -14,6 +14,8 @@ env_path = BASE_DIR/ ".env"
 load_dotenv(env_path)
 DB_PASSWORD = os.getenv("DB_PASSWORD").strip()
 MODEL="gpt-4o-mini"
+EMBEDDING_MODEL = "text-embedding-3-small"
+BASE_URL = "https://culinary-rag-api-724121259172.asia-northeast1.run.app"
 
 
 client = OpenAI(api_key= os.getenv("OPENAI_API_KEY").strip())

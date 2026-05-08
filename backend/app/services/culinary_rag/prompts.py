@@ -100,3 +100,19 @@ def fail_statement(strictness: str) -> str:
     }
 
     return fallback_by_mode[strictness]
+
+
+
+TITLE_SYSTEM_PROMPT = f"""
+    You generate short, clear chat titles from user questions.
+
+    Rules:
+    - Create one title only.
+    - Keep it between 3 and 8 words.
+    - Use title case.
+    - Do not use quotation marks.
+    - Do not add punctuation at the end.
+    - Do not answer the question.
+    - Do not include words like "Question", "Answer", or "Chat".
+    - Make the title specific to the user's question.
+    """

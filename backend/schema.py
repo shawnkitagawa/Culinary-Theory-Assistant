@@ -66,7 +66,7 @@ class AnswerCreateResponse(BaseModel):
 # -------------------------
 
 class ChatCreate(BaseModel):
-    question: str | None = None
+    question: str
 
 
 class ChatCreateResponse(BaseModel):

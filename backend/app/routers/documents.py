@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status, Query, Response
+from fastapi.responses import JSONResponse
 import re
 import os 
 from sqlalchemy.orm import Session 
@@ -8,6 +9,9 @@ from pathlib import Path
 from app.database.db import Document, Chunk
 from sqlalchemy.exc import IntegrityError
 from app.services.culinary_rag.utils import text_to_vector
+from schema import DocumentCreate, DocumentFetchAllResponse,DocumentResponse, DocumentStatus
+from app.core.config import BASE_URL
+from uuid import UUID 
 
 
 FOLDER_PATH = Path(r"C:\Users\seank\Desktop\PROJECT_FREE\Q-A-StudyAssistant\raw_text")
@@ -105,10 +109,11 @@ def createDocument(text: str, file_name: str, file_path: str):
     }
 
 
-@router.post("/")
+
+    #Logical ERROR!!
+@router.post("/", response_model = DocumentResponse, status_code=status.HTTP_201_CREATED)
 def ingest_document(db: Session = Depends(get_db)): 
       # 1. create document row
-
     try: 
 
         for filename in os.listdir(FOLDER_PATH):
@@ -158,14 +163,25 @@ def ingest_document(db: Session = Depends(get_db)):
 
 
             db.commit()
+            db.refresh(new_document)
+
+        return {
+            "document_id": new_document.document_id, 
+            "title": new_document.title, 
+            "total_page": new_document.total_page, 
+            "author": new_document.author, 
+            "created_at": new_document.created_at, 
+            "published_at": new_document.published_at, 
+            "status": new_document.status, 
+            "file_path": new_document.file_path, 
+            "self": f"{BASE_URL}/documents/{new_document.document_id}"
+
+        }
         
     except IntegrityError as e: 
         db.rollback()
         print("IntegrityError:", e)
-        raise HTTPException(
-            status_code=400, 
-            detail = "Duplicate document/chunk or database constraint error" 
-        )
+        return JSONResponse(status_code=409, content = {"Error": "A document with this file_path already exists"})
     
     except Exception as e: 
         db.rollback()
@@ -174,6 +190,75 @@ def ingest_document(db: Session = Depends(get_db)):
         raise HTTPException(status_code= 500, detail = "Internal Server error during ingestion")
 
 
-    return {"message": "Succesful "}
+
+@router.get("/{document_id}", response_model = DocumentResponse, status_code=status.HTTP_200_OK)
+def fetch_document(document_id: UUID, db: Session = Depends(get_db)): 
+
+    document = db.query(Document).filter(Document.document_id == document_id).first()
+
+    if document is None: 
+        return JSONResponse(status_code=404, content = {"Error": "No document with this document_id exists"})
+
+    
+    return {
+        "document_id": document.document_id, 
+        "title": document.title, 
+        "total_page": document.total_page, 
+        "author": document.author, 
+        "created_at": document.created_at, 
+        "published_at": document.published_at, 
+        "status": document.status, 
+        "file_path": "uploads/the_professional_chef.pdf", 
+        "self": "https://culinary-rag-api.example.com/documents/1fcd7a5a-9a5c-4c02-bf3f-81a29a0a1111" 
+
+    }
+
+
+
+@router.get("/", response_model= DocumentFetchAllResponse, status_code=status.HTTP_200_OK)
+def fetch_all_documents(
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=10, ge=1, le=100),
+    db: Session = Depends(get_db)
+): 
+    documents = db.query(Document).offset(offset).limit(limit).all()
+
+    return {
+        "entries": [
+            {
+                "document_id": document.document_id, 
+                "title": document.title, 
+                "total_page": document.total_page, 
+                "author": document.author, 
+                "created_at": document.created_at, 
+                "published_at": document.published_at, 
+                "status": document.status, 
+                "file_path": document.file_path, 
+                "self": f"{BASE_URL}/documents/{document.document_id}" 
+            }
+            for document in documents
+        ],
+        "next": f"{BASE_URL}/documents?offset={offset + limit}&limit={limit}"
+    }
+
+
+
+
+@router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_document(document_id: UUID, db: Session = Depends(get_db)): 
+
+    document = db.query(Document).filter(Document.document_id == document_id).first()
+
+
+    if document is None: 
+        return JSONResponse(status_code=404, content = {"Error": "No document with this document_id exists" })
+    
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
 
 
